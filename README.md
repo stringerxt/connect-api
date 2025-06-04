@@ -17,9 +17,9 @@ npm install
 ## Uso
 
 ```bash
-node cpfScraper.js --cpf 020.527.631-80 --nasc 23/06/1995
+node cpfScraper.js --cpf 000.000.000-00 --nasc 00/00/0000
 # ou
-node cpfScraper.js --cpf 02052763180 --nasc 23061995 --browser edge
+node cpfScraper.js --cpf 00000000000 --nasc 0000000 --browser edge
 ```
 
 O script abre o navegador, preenche o formulário, clica no hCaptcha
