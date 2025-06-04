@@ -4,6 +4,7 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
+    "postinstall": "PUPPETEER_PRODUCT=chrome npx puppeteer browsers install chrome",
     "start": "node app.js"
   },
   "dependencies": {
