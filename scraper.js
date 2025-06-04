@@ -1,4 +1,3 @@
-
 // scraper.js
 import puppeteer from 'puppeteer';
 
@@ -20,8 +19,8 @@ const formatNascimento = d => {
 export async function consultarCpf(cpf, nasc) {
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--lang=pt-BR'],
-    executablePath: process.env.EDGE_PATH // opcional (.env)
+    args: ['--lang=pt-BR', '--no-sandbox', '--disable-setuid-sandbox'],
+    executablePath: puppeteer.executablePath() // usa o Chromium que o Puppeteer já baixou
   });
 
   try {
