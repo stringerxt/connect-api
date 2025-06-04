@@ -1,7 +1,9 @@
 // scraper.js
 import puppeteer from 'puppeteer';
 
-const URL = 'https://servicos.receita.fazenda.gov.br/Servicos/CPF/ConsultaSituacao/ConsultaPublica.asp';
+const URL =
+  'https://servicos.receita.fazenda.gov.br/Servicos/CPF/ConsultaSituacao/ConsultaPublica.asp';
+
 const onlyDigits = str => (str || '').replace(/\D+/g, '');
 const formatNascimento = d => {
   d = d.replace(/\D+/g, '');
@@ -11,16 +13,11 @@ const formatNascimento = d => {
   return d;
 };
 
-/**
- * Faz a consulta e devolve JSON
- * @param {string} cpf  – 000.000.000-00 ou só dígitos
- * @param {string} nasc – DD/MM/AAAA, DDMMYYYY ou AAAAMMDD
- */
 export async function consultarCpf(cpf, nasc) {
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--lang=pt-BR', '--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: puppeteer.executablePath() // usa o Chromium que o Puppeteer já baixou
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--lang=pt-BR'],
+    executablePath: puppeteer.executablePath()   // aponta para o Chrome baixado
   });
 
   try {
@@ -29,21 +26,19 @@ export async function consultarCpf(cpf, nasc) {
     await page.type('#txtCPF', onlyDigits(cpf));
     await page.type('#txtDataNascimento', formatNascimento(nasc));
 
-    // marca o hCaptcha (espera 1 s)
+    // marca o hCaptcha
     const iframe = await page.waitForSelector('iframe[src*="hcaptcha.com"]');
     const hFrame = await iframe.contentFrame();
     await hFrame.click('div[role="checkbox"]');
     await page.waitForTimeout(1000);
 
     const SUBMIT = '#id_submit';
-    await page.waitForSelector(SUBMIT, { visible: true });
     await Promise.all([
       page.waitForNavigation({ waitUntil: 'networkidle2' }),
       page.click(SUBMIT)
     ]);
 
-    // lê o resultado
-    await page.waitForSelector('#mainComp > div:nth-child(3)');
+    // extrai resultado
     const raw = await page.$eval(
       '#mainComp > div:nth-child(3)',
       el => el.innerText.trim()
